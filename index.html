@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+
+<style> /* set the CSS */
+
+body { 
+  font: 14px Arial;
+}
+
+.axis path,
+.axis line {
+    fill: none;
+    stroke: grey;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+
+</style>
+<body>
+
+<center><h1>GISTEMP Data</h1></center>
+<br />
+<!-- load the d3.js library -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js"></script>
+
+<script>
+
+// Set the dimensions of the canvas / graph
+var margin = {top: 30, right: 20, bottom: 50, left: 50},
+    width = 800 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+// Parse the date / time
+var parseDate = d3.time.format("%Y").parse;
+
+// Set the ranges
+var x = d3.time.scale().range([0, width]);
+var y = d3.scale.linear().range([height, 0]);
+
+// Define the axes
+var xAxis = d3.svg.axis().scale(x)
+    .orient("bottom").ticks(20);
+
+var yAxis = d3.svg.axis().scale(y)
+    .orient("left").ticks(20);
+
+// Define the lines
+var valueGlob = d3.svg.line()
+    .x(d => x(d.Year))
+    .y(d => y(d.Glob));
+
+var valueNorth = d3.svg.line()
+    .x(d => x(d.Year))
+    .y(d => y(d.NHem));
+
+var valueSouth = d3.svg.line()
+    .x(d => x(d.Year))
+    .y(d => y(d.SHem));
+
+// Adds the svg canvas
+var svg = d3.select("body")
+    .append("svg")
+        .attr("width", width + margin.left + margin.right)
+        .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+        .attr("transform", 
+              "translate(" + margin.left + "," + margin.top + ")");
+
+// Get the data
+d3.csv("ExcelFormattedGISTEMPData2CSV.csv", function(error, data) {
+    data.forEach(function(d) {
+        d.Year = parseDate(d.Year);
+        d.Glob = parseInt(d.Glob);
+        d.NHem = parseInt(d.NHem);
+        d.SHem = parseInt(d.SHem);
+    });
+
+    // Scale the range of the data
+    x.domain(d3.extent(data, d => d.Year));
+    minTemp = d3.min(data, d => d.Glob);
+    maxTemp = d3.max(data, d => d.Glob);
+    y.domain([minTemp - 10, maxTemp + 10]);
+
+    // Add the lines
+    globColor = "blue";
+    svg.append("path")
+        .attr("class", "line")
+        .attr("stroke", globColor)
+        .attr("stroke-width", "2")
+        .attr("fill", "none")
+        .attr("d", valueGlob(data));
+
+    northColor = "red";
+    svg.append("path")
+        .attr("class", "line")
+        .attr("stroke", northColor)
+        .attr("stroke-width", "2")
+        .attr("fill", "none")
+        .attr("d", valueNorth(data));
+
+    southColor = "green";
+    svg.append("path")
+        .attr("class", "line")
+        .attr("stroke", southColor)
+        .attr("stroke-width", "2")
+        .attr("fill", "none")
+        .attr("d", valueSouth(data));
+
+    // Add the X Axis
+    svg.append("g")
+        .attr("class", "x axis")
+        .attr("transform", "translate(0," + height + ")")
+        .call(xAxis);
+
+    // Add the Y Axis
+    svg.append("g")
+        .attr("class", "y axis")
+        .call(yAxis);
+
+    // Add labels
+    svg.append("text")
+      .attr("transform",
+            "translate(" + (width / 2) + " ," + 
+                           (height + 50) + ")")
+      .style("text-anchor", "middle")
+      .text("Year");
+ 
+    svg.append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 0 - margin.left)
+      .attr("x",0 - (height / 2))
+      .attr("dy", "1em")
+      .style("text-anchor", "middle")
+      .text("Temperature");
+
+    // Add (manual) legend
+    legendCX = 50;
+    legendCY = 25;
+    svg.append("circle").attr("cx", legendCX).attr("cy", legendCY).attr("r", 6).style("fill", globColor)
+    svg.append("circle").attr("cx", legendCX).attr("cy", legendCY + 30).attr("r", 6).style("fill", northColor)
+    svg.append("circle").attr("cx", legendCX).attr("cy", legendCY + 60).attr("r", 6).style("fill", southColor)
+    svg.append("text").attr("x", legendCX + 10).attr("y", legendCY + 5).text("Global").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", legendCX + 10).attr("y", legendCY + 35).text("North Hemisphere").style("font-size", "15px").attr("alignment-baseline","middle")
+    svg.append("text").attr("x", legendCX + 10).attr("y", legendCY + 65).text("South Hemisphere").style("font-size", "15px").attr("alignment-baseline","middle")
+});
+
+</script>
+
+<br />
+<h3><strong>Explanation:</strong></h3>
+<br />
+The Globe annual mean temperatures (blue) are compared here with those of the North (red) and South (green) Hemispheres from 1880 to 2014. The data was taken from the NASA's GISS Surface Temperature Analysis (<a href="https://data.giss.nasa.gov/gistemp/">GISTEMP</a>).
+<br /><br />
+The line graph clearly shows an increase in the average temperature. In the past 20 years, the increase in the northern hemisphere seems to be more than in the southern hemisphere.
+<br /><br />
+In the x-axis there are all the years (1880-2014) avialable in GISTEMP. In the y-axis in °C.
+</body>
