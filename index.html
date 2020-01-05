@@ -131,7 +131,7 @@ d3.csv("ExcelFormattedGISTEMPData2CSV.csv", function(error, data) {
       .attr("x",0 - (height / 2))
       .attr("dy", "1em")
       .style("text-anchor", "middle")
-      .text("Temperature");
+      .text("Temperature deviation (0.01 °C)");
 
     // Add (manual) legend
     legendCX = 50;
@@ -153,5 +153,5 @@ The Globe annual mean temperatures (blue) are compared here with those of the No
 <br /><br />
 The line graph clearly shows an increase in the average temperature. In the past 20 years, the increase in the northern hemisphere seems to be more than in the southern hemisphere.
 <br /><br />
-In the x-axis there are all the years (1880-2014) avialable in GISTEMP. In the y-axis in °C.
+In the x-axis there are all the years (1880-2014) avialable in GISTEMP. The y-axis is the deviation from the 1951–1980 mean in 0.01 degrees.
 </body>
