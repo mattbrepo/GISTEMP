@@ -1,7 +1,7 @@
 # GISTEMP
 Plotting [GISTEMP](https://data.giss.nasa.gov/gistemp/) data using [D3.js](https://d3js.org/) library.
 
-**Language: HTML / Javascript / D3**
+**Language: Javascript**
 
 **Start: 2019**
 
